@@ -978,7 +978,12 @@ func (s *Store) SnapInfo(ctx context.Context, snapSpec SnapSpec, user *auth.User
 func (s *Store) snapInfo(ctx context.Context, snapName string, fields string, user *auth.UserState) (*storeInfo, *http.Response, error) {
 	query := url.Values{}
 	query.Set("fields", fields)
-	query.Set("architecture", s.architecture)
+	arch := os.Getenv("UBUNTU_STORE_ARCH")
+	if arch != "" {
+		query.Set("architecture", arch)
+	} else {
+		query.Set("architecture", s.architecture)
+	}
 
 	u := s.endpointURL(path.Join(snapInfoEndpPath, snapName), query)
 	reqOptions := &requestOptions{
